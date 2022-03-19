@@ -1,0 +1,21 @@
+
+AVR:
+----
+
+
+SAMD51:
+-------
+
+ARMv7 arch ref manual: pg C1-752 - a BKPT in an IRQ w/ higher priority than debugmon will
+trigger a HardFault.
+
+* Implement a HardFault handler that logs the IRQ BKPT $PC and set the MON_PEND bit to
+  go to DebugMon after the IRQ is finished. Document this "delayed breakpoint" behavior.
+
+  A consequence is that we cannot single-step (or inspect state while halted) within IRQs.
+
+* FPB breakpoints may be ignored or HardFaulted; impl.defined. Test. Document.
+
+* Add a 'skinny breakpoints' #define macro in dbg.h that just converts `BREAK()` to `__BKPT()`.
+
+
