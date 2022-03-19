@@ -15,6 +15,10 @@ Usage
 See instructions in the `dbg.h` header file for how to use debugging macros to create
 software breakpoints, assertions, or emit debug log info to the debugger console.
 
+To debug your sketch you will need the companion
+[arduino-dbg](https://github.com/kimballa/arduino-dbg) debugger. See the README.md in
+that repository for instructions on how to install and use the debugger itself.
+
 Compiling
 ---------
 
