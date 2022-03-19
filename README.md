@@ -9,10 +9,10 @@ Usage
 -----
 
 * Include the "PyArduinoDebug" library in your sketch in the Arduino IDE, or --
-* Build this library according to the compilation instructions below and include `dbg.h`
+* Build this library according to the compilation instructions below and include `PyArduinoDebug.h`
   in your sketch source. Add `PyArduinoDebug` to the `libs` list variable in your Makefile.
 
-See instructions in the `dbg.h` header file for how to use debugging macros to create
+See instructions in the `PyArduinoDebug.h` header file for how to use debugging macros to create
 software breakpoints, assertions, or emit debug log info to the debugger console.
 
 To debug your sketch you will need the companion

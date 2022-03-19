@@ -1,4 +1,4 @@
-// dbg.h - Add debugger support to your Arduino sketch.
+// PyArduinoDebug.h - Add debugger support to your Arduino sketch.
 // For use with the arduino-dbg python Arduino debugger.
 //
 // (c) Copyright 2021 Aaron Kimball
@@ -34,11 +34,11 @@
 //    or for arduino.mk makefile projects, include `PyArduinoDebug` in your  Makefile's
 //    `libs` list variable.
 //
-// 2) #include <dbg.h> in any files where you want to use the debug API macros,
+// 2) #include <PyArduinoDebug.h> in any files where you want to use the debug API macros,
 //    but most importantly in the file containing your `setup()` method:
 //
 //      /* define DBG_START_PAUSED, etc. here if desired. */
-//      #include<dbg.h>
+//      #include<PyArduinoDebug.h>
 //
 //      void setup() {
 //        /* your setup function. */
@@ -74,7 +74,7 @@
 //
 // ** Configuration:
 //
-// You can control this library by defining the following macros before dbg.h is #include'd:
+// You can control this library by defining the following macros before PyArduinoDebug.h is #include'd:
 //
 // * DEBUG or DBG_ENABLED: Debugger support is explicitly enabled.
 // * Debugger support is enabled by default if NDEBUG is *not* defined.
@@ -104,8 +104,8 @@
 // * DBG_NO_TIME: If defined, system time reporting is disabled.
 //
 
-#ifndef _DBG_H
-#define _DBG_H
+#ifndef _PY_ARDUINO_DBG_H
+#define _PY_ARDUINO_DBG_H
 
 // Set the serial interface to use.
 #ifndef DBG_SERIAL
@@ -425,4 +425,4 @@ void __dbg_disable_watchdog() __attribute__((naked, used, no_instrument_function
 
 #endif /* DBG_ENABLED */
 
-#endif /* _DBG_H */
+#endif /* _PY_ARDUINO_DBG_H */
