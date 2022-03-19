@@ -31,8 +31,8 @@
 // To enable the debugging system, use the following steps:
 //
 // 1) Include the "PyArduinoDebug" library from the Arduino IDE library manager,
-//    or for arduino.mk makefile projects, include `dbg` in your  Makefile's `libs`
-//    list variable.
+//    or for arduino.mk makefile projects, include `PyArduinoDebug` in your  Makefile's
+//    `libs` list variable.
 //
 // 2) #include <dbg.h> in any files where you want to use the debug API macros,
 //    but most importantly in the file containing your `setup()` method:
