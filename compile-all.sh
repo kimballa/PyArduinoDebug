@@ -3,6 +3,7 @@
 # Compile PyArduinoDebug library for all supported architectures.
 
 read -r -d '' BOARDS << EOL
+arduino:avr:uno
 arduino:avr:leonardo
 adafruit:samd:adafruit_feather_m4
 EOL
