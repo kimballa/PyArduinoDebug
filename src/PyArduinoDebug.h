@@ -96,9 +96,9 @@
 // * DBG_START_PAUSED: The sketch will immediately enter the debugger and require
 //   an explicit 'continue' ('C') command before proceeding from DBGSETUP() to the rest of
 //   your setup() fn.
+// * DBG_STD_STRING: If defined, DBGPRINT() and TRACE() will support the std::string type.
 // * DBG_WAIT_FOR_CONNECT: The sketch will wait for a Serial connection before
 //   beginning. (On supported systems - all SAMD Arduinos, and arduino:avr:leonardo.)
-// * DBG_STD_STRING: If defined, DBGPRINT() and TRACE() will support the std::string type.
 //
 // ** Optional component compilation:
 //
