@@ -9,8 +9,9 @@ Usage
 -----
 
 * Include the "PyArduinoDebug" library in your sketch in the Arduino IDE, or --
-* Build this library according to the compilation instructions below and include `PyArduinoDebug.h`
-  in your sketch source. Add `PyArduinoDebug` to the `libs` list variable in your Makefile.
+* Build this library according to the instructions in the "Compiling" section below,
+  and include `PyArduinoDebug.h` in your sketch source. Add `PyArduinoDebug` to the
+  `libs` list variable in your Makefile.
 
 The first line of your `setup()` method must be `DBGSETUP();` -- this will initialize the debugging
 service.
@@ -23,6 +24,10 @@ emit debug log info to the debugger console.
 To debug your sketch you will need the companion
 [arduino-dbg](https://github.com/kimballa/arduino-dbg) debugger. See the README.md in
 that repository for instructions on how to install and use the debugger itself.
+
+An example of configuring and using the debugger is provided in the
+[`DebugUsage.ino`](https://github.com/kimballa/PyArduinoDebug/blob/main/examples/DebugUsage/DebugUsage.ino)
+sketch.
 
 Compiling
 ---------
