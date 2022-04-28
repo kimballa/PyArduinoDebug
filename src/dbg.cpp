@@ -212,11 +212,11 @@ static constexpr uint8_t DBG_PROTOCOL_VER = 1;
 
 
 /**
- * Setup function for debugger; called before user's setup function.
+ * Setup function for debugger; called at beginning of user's setup function.
  * Activate I/O and IRQs required for debugger operation.
  */
-void __dbg_setup() {
-  DBG_SERIAL.begin(DBG_SERIAL_SPEED);
+void __dbg_setup(unsigned int baudRate, int waitForConnFlag, int immediateBreakFlag) {
+  DBG_SERIAL.begin(baudRate);
 
   noInterrupts();
   #if defined(__AVR_ARCH__)
@@ -323,6 +323,17 @@ void __dbg_setup() {
 
   #endif /* (architecture select) */
   interrupts();
+
+  if (waitForConnFlag) {
+    // Wait for serial connection before proceeding.
+    while (!DBG_SERIAL) { delay(1); };
+  }
+
+  if (immediateBreakFlag) {
+    // Breakpoint before starting user code in setup().
+    DBGPRINT("Break on init");
+    BREAK();
+  }
 }
 
 // Keyword sent from sketch/server to client whenever breakpoint is triggered (either

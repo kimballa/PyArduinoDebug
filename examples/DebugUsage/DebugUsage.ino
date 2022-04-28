@@ -15,7 +15,8 @@
 // serial port before proceeding with your sketch.
 //#define DBG_WAIT_FOR_CONNECT
 
-// Uncomment the next line if you want the sketch to pause *before* entering your setup() method.
+// Uncomment the next line if you want the sketch to pause *before* running the body of
+// your setup() method (after call to DBGSETUP()).
 //#define DBG_START_PAUSED
 
 // After setting the configuration with macros above, now include PyArduinoDebug.h.
@@ -23,8 +24,10 @@
 #include <PyArduinoDebug.h>
 
 
-// You *must* define a setup method to use this debugger -- even if it's empty.
+// You *must* define a setup method to use this debugger and call DBGSETUP() immediately.
 void setup() {
+  DBGSETUP();
+  /* Any other setup activity goes after call to DBGSETUP(). */
 }
 
 static uint8_t state = 0;

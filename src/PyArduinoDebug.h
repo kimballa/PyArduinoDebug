@@ -1,6 +1,8 @@
 // PyArduinoDebug.h - Add debugger support to your Arduino sketch.
 // For use with the arduino-dbg python Arduino debugger.
 //
+// (Scroll down and read on for instructions on how to configure and use the debugger.)
+//
 // (c) Copyright 2021 Aaron Kimball
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -41,14 +43,13 @@
 //      #include<PyArduinoDebug.h>
 //
 //      void setup() {
-//        /* your setup function. */
+//        DBGSETUP(); // This should be the first function you call.
+//
+//        /* The rest of your setup function. */
 //      }
 //
-//    You must define a setup() { ... } method, even if its body is empty.
-//
-//    Under the hood, your `setup()` function will be renamed to `__user_setup()` and
-//    invoked by a setup() function that first injects debugger handling into the
-//    environment.
+//    You must define a setup() { ... } method and call DBGSETUP() immediately in order
+//    to enable debugging.
 //
 // ** Timers:
 //
@@ -72,6 +73,9 @@
 // DBGPRINT(msg) -- Print a message to the serial console, printed in the debugger.
 // TRACE(msg)    -- Print a message to the serial console, along with file/line info.
 //
+// DBGSETUP() -- Initial setup of the debugging system. You should do this as the first
+//               line of your setup() method.
+//
 // ** Configuration:
 //
 // You can control this library by defining the following macros before PyArduinoDebug.h is #include'd:
@@ -85,12 +89,16 @@
 //   Without it, the filename (via __FILE__ macro) will be used instead. Function names will
 //   consume RAM whereas filenames are stored in Flash via the `F()` macro.
 // * DBG_SERIAL: The name of the serial interface to use. Default is `Serial`.
+//   [arduino.mk: you must recompile libPyArduinoDebug.a with the same value for this to take
+//   effect.]
 // * DBG_SERIAL_SPEED: Speed of the serial connection. Default is 57600. The DBG_SERIAL_SPEED_FAST
 //   (57600) and DBG_SERIAL_SPEED_SLOW (9600) macros are available for your convenience.
 // * DBG_START_PAUSED: The sketch will immediately enter the debugger and require
-//   an explicit 'continue' ('C') command before proceeding to your setup() fn.
+//   an explicit 'continue' ('C') command before proceeding from DBGSETUP() to the rest of
+//   your setup() fn.
 // * DBG_WAIT_FOR_CONNECT: The sketch will wait for a Serial connection before
 //   beginning. (On supported systems - all SAMD Arduinos, and arduino:avr:leonardo.)
+// * DBG_STD_STRING: If defined, DBGPRINT() and TRACE() will support the std::string type.
 //
 // ** Optional component compilation:
 //
@@ -108,10 +116,12 @@
 #define _PY_ARDUINO_DBG_H
 
 // Set the serial interface to use.
+// If compiling with arduino.mk, you must recompile the debugger library to modify this setting.
 #ifndef DBG_SERIAL
 #define DBG_SERIAL Serial
 #endif
 
+// Set the speed (baud rate) for the serial interface.
 #define DBG_SERIAL_SPEED_FAST (57600)
 #define DBG_SERIAL_SPEED_SLOW (9600)
 
@@ -142,6 +152,7 @@ typedef unsigned short int bp_bitfield_t;
 #define ASSERT(x)
 #define TRACE(x)
 #define DBGPRINT(x)
+#define DBGSETUP()
 
 #else /* DBG_ENABLED */
 // Debugger support enabled.
@@ -155,7 +166,8 @@ typedef unsigned short int bp_bitfield_t;
 // dynamically from the debugger. Initially set to 'all enabled'.
 static bp_bitfield_t breakpoint_en_flags = (bp_bitfield_t)(-1);
 
-extern void __dbg_setup() __attribute__((no_instrument_function));
+extern void __dbg_setup(unsigned int baudRate, int waitForConnFlag, int immediateBreakFlag)
+    __attribute__((no_instrument_function));
 
 /* Enter user breakpoint. */
 extern void __dbg_break(const uint8_t flag_num, uint16_t* flags,
@@ -370,6 +382,18 @@ extern void __dbg_trace(const __FlashStringHelper *tracemsg, const __FlashString
     const uint16_t lineno)
     __attribute__((no_instrument_function));
 
+#if defined(DBG_STD_STRING) && defined(__cplusplus)
+  #include<string>
+  inline void __dbg_print(const std::string &s) { __dbg_print(s.c_str()); };
+  inline void __dbg_trace(const std::string &tracemsg, const char *funcOrFile, const uint16_t lineno) {
+    __dbg_trace(tracemsg.c_str(), funcOrFile, lineno);
+  };
+  inline void __dbg_trace(const std::string &tracemsg, const __FlashStringHelper *funcOrFile,
+      const uint16_t lineno) {
+    __dbg_trace(tracemsg.c_str(), funcOrFile, lineno);
+  };
+#endif /* DBG_STD_STRING */
+
 
 #ifdef __AVR_ARCH__
 // On AVR if we use WDT to reset the device, disable WDT early in boot process.
@@ -390,10 +414,10 @@ void __dbg_disable_watchdog() __attribute__((naked, used, no_instrument_function
 
 
 #ifdef DBG_START_PAUSED
-// Within the setup() macro, start paused immediately prior to user's setup().
-#  define __optional_immediate_brk() { DBGPRINT("Break on init"); BREAK(); }
+// Start paused immediately prior to user's setup().
+#  define DBG_IMMEDIATE_BRK_FLAG  (1)
 #else
-#  define __optional_immediate_brk()
+#  define DBG_IMMEDIATE_BRK_FLAG  (0)
 #endif /* DBG_START_PAUSED */
 
 #if defined(__AVR_ATmega32U4__) or defined(ARUDINO_ARCH_SAMD)
@@ -405,22 +429,13 @@ void __dbg_disable_watchdog() __attribute__((naked, used, no_instrument_function
 #endif /* arch detection */
 
 #if WAIT_FOR_CONNECT_SUPPORTED == 1 && defined(DBG_WAIT_FOR_CONNECT)
-#  define __optional_wait_for_conn()  while (!DBG_SERIAL) { delay(1); };
+#  define DBG_WAIT_CONN_FLAG  (1)
 #else
-#  define __optional_wait_for_conn()
+#  define DBG_WAIT_CONN_FLAG  (0)
 #endif /* DBG_WAIT_FOR_CONNECT ? */
 
-#define setup(x) \
-    __user_setup(); /* fwd declare */       \
-    void setup() {                          \
-      __dbg_setup();                        \
-      __optional_wait_for_conn();           \
-      __optional_immediate_brk();           \
-      __user_setup();                       \
-    }                                       \
-    /* user's code starts below. */         \
-    void __user_setup()
 
+#define DBGSETUP() __dbg_setup(DBG_SERIAL_SPEED, DBG_WAIT_CONN_FLAG, DBG_IMMEDIATE_BRK_FLAG)
 #define DBGPRINT(x) __dbg_print(x)
 
 #endif /* DBG_ENABLED */
