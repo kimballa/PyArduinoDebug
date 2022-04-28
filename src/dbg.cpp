@@ -426,7 +426,11 @@ static void __dbg_service(const uint8_t bp_num, uint16_t *breakpoint_flags, uint
     int offset = 0;
     uint8_t b = 0;
 
+#ifndef __AVR_ARCH__
+    // AVR defines an `SP` macro bound to the mem-mapped addr of the SP register.
+    // Everyone else needs this bound by the compiler.
     volatile register dbg_stackptr_t SP asm("sp");
+#endif /* ! __AVR_ARCH */
     switch(cmd) {
     case DBG_OP_BREAK:
       __dbg_report_pause(bp_num, breakpoint_flags, hw_addr);
@@ -844,7 +848,7 @@ void __dbg_print(unsigned long msg) {
   DBG_SERIAL.println(msg, DEC);
 }
 
-void __dbg_break(const uint8_t flag_num, uint16_t* flags,
+void __dbg_break(const uint8_t flag_num, bp_bitfield_t* flags,
     const char *funcOrFile, const uint16_t lineno) {
 
   if (flag_num < _DBG_MAX_BP_FLAGS_PER_FILE && (*flags & bit(flag_num)) == 0) {
@@ -891,7 +895,7 @@ void __dbg_break(const uint8_t flag_num, uint16_t* flags,
   #endif /* Architecture select */
 }
 
-void __dbg_break(const uint8_t flag_num, uint16_t* flags,
+void __dbg_break(const uint8_t flag_num, bp_bitfield_t* flags,
     const __FlashStringHelper *funcOrFile, const uint16_t lineno) {
 
   if (flag_num < _DBG_MAX_BP_FLAGS_PER_FILE && (*flags & bit(flag_num)) == 0) {

@@ -129,8 +129,10 @@
 #define DBG_SERIAL_SPEED DBG_SERIAL_SPEED_FAST
 #endif
 
+#include<stdint.h>  // For typedefs e.g. uint8_t
+
 #define _DBG_MAX_BP_FLAGS_PER_FILE (16)
-typedef unsigned short int bp_bitfield_t;
+typedef uint16_t bp_bitfield_t;
 
 // Determine whether to enable the debugger, based on preprocessor flags.
 #if defined(DEBUG) && !defined(DBG_ENABLED)
@@ -157,7 +159,7 @@ typedef unsigned short int bp_bitfield_t;
 #else /* DBG_ENABLED */
 // Debugger support enabled.
 
-#include<Arduino.h>  // For typedefs e.g. uint8_t
+#include<Arduino.h>
 #ifdef __AVR_ARCH__
 #include<avr/wdt.h>  // For watchdog timer control
 #endif /* AVR_ARCH */
@@ -170,9 +172,9 @@ extern void __dbg_setup(unsigned int baudRate, int waitForConnFlag, int immediat
     __attribute__((no_instrument_function));
 
 /* Enter user breakpoint. */
-extern void __dbg_break(const uint8_t flag_num, uint16_t* flags,
+extern void __dbg_break(const uint8_t flag_num, bp_bitfield_t* flags,
     const char *funcOrFile, const uint16_t lineno) __attribute__((noinline));
-extern void __dbg_break(const uint8_t flag_num, uint16_t* flags,
+extern void __dbg_break(const uint8_t flag_num, bp_bitfield_t* flags,
     const __FlashStringHelper *funcOrFile, const uint16_t lineno)
     __attribute__((noinline));
 
