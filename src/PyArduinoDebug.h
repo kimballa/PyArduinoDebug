@@ -71,6 +71,9 @@
 //                  location in the debugger if the assertion fails.
 //
 // DBGPRINT(msg) -- Print a message to the serial console, printed in the debugger.
+// DBGPRINTI(msg, intVal) -- Print msg and the base-10 int val to the serial console / debugger.
+// DBGPRINTU(msg, intVal) -- Print msg and the base-10 unsigned int val to the serial console / debugger.
+// DBGPRINTX(msg, intVal) -- Print msg and the base-16 unsigned int val to the serial console / debugger.
 // TRACE(msg)    -- Print a message to the serial console, along with file/line info.
 //
 // DBGSETUP() -- Initial setup of the debugging system. You should do this as the first
@@ -154,6 +157,9 @@ typedef uint16_t bp_bitfield_t;
 #define ASSERT(x)
 #define TRACE(x)
 #define DBGPRINT(x)
+#define DBGPRINTI(x,y)
+#define DBGPRINTU(x,y)
+#define DBGPRINTX(x,y)
 #define DBGSETUP()
 
 #else /* DBG_ENABLED */
@@ -374,6 +380,11 @@ extern void __dbg_print(long msg) __attribute__((no_instrument_function));
 extern void __dbg_print(unsigned int msg) __attribute__((no_instrument_function));
 extern void __dbg_print(unsigned long msg) __attribute__((no_instrument_function));
 
+extern void __dbg_print_vali(const char *message, int val, uint8_t base);
+extern void __dbg_print_vali(const __FlashStringHelper *msg, int val, uint8_t base);
+extern void __dbg_print_valu(const char *message, unsigned int val, uint8_t base);
+extern void __dbg_print_valu(const __FlashStringHelper *msg, unsigned int val, uint8_t base);
+
 extern void __dbg_trace(const char *tracemsg, const char *funcOrFile, const uint16_t lineno)
     __attribute__((no_instrument_function));
 extern void __dbg_trace(const char *tracemsg, const __FlashStringHelper *funcOrFile, const uint16_t lineno)
@@ -439,6 +450,9 @@ void __dbg_disable_watchdog() __attribute__((naked, used, no_instrument_function
 
 #define DBGSETUP() __dbg_setup(DBG_SERIAL_SPEED, DBG_WAIT_CONN_FLAG, DBG_IMMEDIATE_BRK_FLAG)
 #define DBGPRINT(x) __dbg_print(x)
+#define DBGPRINTI(msg, v) __dbg_print_vali(msg, v, 10)
+#define DBGPRINTU(msg, v) __dbg_print_valu(msg, v, 10)
+#define DBGPRINTX(msg, v) __dbg_print_valu(msg, v, 16)
 
 #endif /* DBG_ENABLED */
 

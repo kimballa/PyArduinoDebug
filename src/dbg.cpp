@@ -870,6 +870,42 @@ void __dbg_print(unsigned long msg) {
   DBG_SERIAL.println(msg, DEC);
 }
 
+void __dbg_print_vali(const char *message, int val, uint8_t base) {
+  DBG_SERIAL.print(DBG_RET_PRINT);
+  if (NULL != message) {
+    DBG_SERIAL.print(message);
+    DBG_SERIAL.print(' ');
+  }
+  DBG_SERIAL.println(val, base);
+}
+
+void __dbg_print_vali(const __FlashStringHelper *message, int val, uint8_t base) {
+  DBG_SERIAL.print(DBG_RET_PRINT);
+  if (NULL != message) {
+    DBG_SERIAL.print(message);
+    DBG_SERIAL.print(' ');
+  }
+  DBG_SERIAL.println(val, base);
+}
+
+void __dbg_print_valu(const char *message, unsigned int val, uint8_t base) {
+  DBG_SERIAL.print(DBG_RET_PRINT);
+  if (NULL != message) {
+    DBG_SERIAL.print(message);
+    DBG_SERIAL.print(' ');
+  }
+  DBG_SERIAL.println(val, base);
+}
+
+void __dbg_print_valu(const __FlashStringHelper *message, unsigned int val, uint8_t base) {
+  DBG_SERIAL.print(DBG_RET_PRINT);
+  if (NULL != message) {
+    DBG_SERIAL.print(message);
+    DBG_SERIAL.print(' ');
+  }
+  DBG_SERIAL.println(val, base);
+}
+
 void __dbg_break(const uint8_t flag_num, bp_bitfield_t* flags,
     const char *funcOrFile, const uint16_t lineno) {
 
