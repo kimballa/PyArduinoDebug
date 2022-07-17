@@ -172,7 +172,12 @@ typedef uint16_t bp_bitfield_t;
 
 // Define bitfield of 16 flags / translation unit to switch on/off up to 16 breakpoints/file
 // dynamically from the debugger. Initially set to 'all enabled'.
+// This will create an unused variable if BREAK() is not called within a translation unit,
+// so we suppress the warning here.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
 static bp_bitfield_t breakpoint_en_flags = (bp_bitfield_t)(-1);
+#pragma GCC diagnostic pop
 
 extern void __dbg_setup(unsigned int baudRate, int waitForConnFlag, int immediateBreakFlag)
     __attribute__((no_instrument_function));
