@@ -1112,7 +1112,7 @@ void __dbg_break(const uint8_t flag_num, bp_bitfield_t* flags,
       _set_dbg_status(debug_status & ~DBG_STATUS_STEP2CONT); // Clear STEP2CONT flag.
 
       goto debug_mon_epilogue; // Immediate 'return'. Do not enter __dbg_service(). Drop out to epilogue.
-    } if (SCB->DFSR & (1 << SCB_DFSR_HALTED_Pos)) {
+    } else if (SCB->DFSR & (1 << SCB_DFSR_HALTED_Pos)) {
       // This was triggered by single-stepping.
       _set_dbg_status(debug_status | DBG_STATUS_IN_BREAK | DBG_STATUS_STEP_BKPT);
     } else if (SCB->DFSR & (1 << SCB_DFSR_DWTTRAP_Pos)) {
