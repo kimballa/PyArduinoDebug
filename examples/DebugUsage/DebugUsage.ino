@@ -19,6 +19,10 @@
 // your setup() method (after call to DBGSETUP()).
 //#define DBG_START_PAUSED
 
+// Uncomment the next line if you use C++'s `std::string` class in your sketch and want
+// to be able to pass them to DBGPRINT(). The Arduino `String` class can always be printed.
+//#define DBG_STD_STRING
+
 // After setting the configuration with macros above, now include PyArduinoDebug.h.
 // If you set or change those macros below this point, they will not take effect.
 #include <PyArduinoDebug.h>

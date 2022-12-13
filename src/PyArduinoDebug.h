@@ -99,7 +99,7 @@
 // * DBG_START_PAUSED: The sketch will immediately enter the debugger and require
 //   an explicit 'continue' ('C') command before proceeding from DBGSETUP() to the rest of
 //   your setup() fn.
-// * DBG_STD_STRING: If defined, DBGPRINT() and TRACE() will support the std::string type.
+// * DBG_STD_STRING: If defined, DBGPRINT() and TRACE() will support the C++ std::string type.
 // * DBG_WAIT_FOR_CONNECT: The sketch will wait for a Serial connection before
 //   beginning. (On supported systems - all SAMD Arduinos, and arduino:avr:leonardo.)
 //
@@ -412,10 +412,20 @@ extern void __dbg_trace(const __FlashStringHelper *tracemsg, const __FlashString
   };
 #endif /* DBG_STD_STRING */
 
+// Inline method definitions for Arduino `String` class from WString.h (included by Arduino.h)
+inline void __dbg_print(const String &s) { __dbg_print(s.c_str()); };
+inline void __dbg_trace(const String &tracemsg, const char *funcOrFile, const uint16_t lineno) {
+  __dbg_trace(tracemsg.c_str(), funcOrFile, lineno);
+};
+inline void __dbg_trace(const String &tracemsg, const __FlashStringHelper *funcOrFile,
+    const uint16_t lineno) {
+  __dbg_trace(tracemsg.c_str(), funcOrFile, lineno);
+};
+
 
 #ifdef __AVR_ARCH__
-// On AVR if we use WDT to reset the device, disable WDT early in boot process.
-void __dbg_disable_watchdog() __attribute__((naked, used, no_instrument_function, section(".init3")));
+  // On AVR if we use WDT to reset the device, disable WDT early in boot process.
+  void __dbg_disable_watchdog() __attribute__((naked, used, no_instrument_function, section(".init3")));
 #endif /* AVR */
 
 #ifdef DBG_PRETTY_FUNCTIONS
